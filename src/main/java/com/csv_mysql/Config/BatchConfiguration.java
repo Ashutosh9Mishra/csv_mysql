@@ -37,7 +37,7 @@ public class BatchConfiguration {
 
     @Autowired
     private DataSource dataSource;
-
+  // this is for reading the data
     @Bean
     public FlatFileItemReader<Order> orderItemReader() {
         return new FlatFileItemReaderBuilder<Order>()
@@ -56,7 +56,7 @@ public class BatchConfiguration {
     public OrderItemProcessor orderItemProcessor() {
         return new OrderItemProcessor();
     }
-
+//this is for writing the data
     @Bean
     public JdbcBatchItemWriter<Order> orderItemWriter() {
         return new JdbcBatchItemWriterBuilder<Order>()
@@ -65,7 +65,7 @@ public class BatchConfiguration {
                 .dataSource(this.dataSource)// Inject the data source for database connectivity
                 .build();
     }
-
+//this is processing the data
     @Bean
     public Step processOrderStep(ItemReader<Order> reader, ItemProcessor<Order, Order> processor,
                                  ItemWriter<Order> writer) {
