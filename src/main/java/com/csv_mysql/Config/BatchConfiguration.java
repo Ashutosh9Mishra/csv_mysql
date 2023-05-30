@@ -37,7 +37,11 @@ public class BatchConfiguration {
 
     @Autowired
     private DataSource dataSource;
-  // this is for reading the data
+ /**
+ * Creates a `FlatFileItemReader` bean to read data from a CSV file.
+ *
+ * @return The configured `FlatFileItemReader` instance.
+ */
     @Bean
     public FlatFileItemReader<Order> orderItemReader() {
         return new FlatFileItemReaderBuilder<Order>()
@@ -51,12 +55,20 @@ public class BatchConfiguration {
                 .build();
     }
 
-
+/**
+ * Creates an `OrderItemProcessor` bean to process each item read by the reader.
+ *
+ * @return The configured `OrderItemProcessor` instance.
+ */
     @Bean
     public OrderItemProcessor orderItemProcessor() {
         return new OrderItemProcessor();
     }
-//this is for writing the data
+/**
+ * Creates a `JdbcBatchItemWriter` bean to write processed items to the database.
+ *
+ * @return The configured `JdbcBatchItemWriter` instance.
+ */
     @Bean
     public JdbcBatchItemWriter<Order> orderItemWriter() {
         return new JdbcBatchItemWriterBuilder<Order>()
@@ -65,7 +77,14 @@ public class BatchConfiguration {
                 .dataSource(this.dataSource)// Inject the data source for database connectivity
                 .build();
     }
-//this is processing the data
+/**
+ * Creates a step for processing orders.
+ *
+ * @param reader   The `ItemReader` to read items.
+ * @param processor The `ItemProcessor` to process items.
+ * @param writer   The `ItemWriter` to write processed items.
+ * @return The configured `Step` instance.
+ */
     @Bean
     public Step processOrderStep(ItemReader<Order> reader, ItemProcessor<Order, Order> processor,
                                  ItemWriter<Order> writer) {
@@ -76,7 +95,13 @@ public class BatchConfiguration {
                 .writer(writer)
                 .build();
     }
-
+/**
+ * Creates a job for processing orders.
+ *
+ * @param listener The `JobCompletionNotificationListener` to receive job completion notifications.
+ * @param processOrderStep The `Step` to be executed in the job.
+ * @return The configured `Job` instance.
+ */
     @Bean
     public Job processOrderJob(JobCompletionNotificationListener listener, Step processOrderStep) {
         return jobBuilderFactory.get("processOrderJob")
